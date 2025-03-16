@@ -11,6 +11,9 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@moralisweb3/common-evm-utils": "^2.27.2",
+    "brandi": "^5.0.0",
+    "moralis": "^2.27.2",
     "signale": "^1.4.0",
     "web3": "^4.16.0"
   },
