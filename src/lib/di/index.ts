@@ -4,7 +4,8 @@ import {createWeb3Module} from './web3'
 import {createMoralisModule, initializeMoralis} from './moralis'
 import {createLoggerModule} from './logger'
 import {createLicenseModule} from './license'
-import {SecretsTokens, WEB3Tokens, MoralisTokens, LoggerTokens, LicenseTokens, Tokens} from './tokens'
+import {createClaimModule} from './claim'
+import {SecretsTokens, WEB3Tokens, MoralisTokens, LoggerTokens, LicenseTokens, ClaimTokens, Tokens} from './tokens'
 
 // Define all module creators and their associated tokens
 // This makes it easy to add new modules - just add them to this array
@@ -14,6 +15,7 @@ const moduleCreators = [
     {create: createWeb3Module, tokens: Object.values(WEB3Tokens)},
     {create: createMoralisModule, tokens: Object.values(MoralisTokens)},
     {create: createLicenseModule, tokens: Object.values(LicenseTokens)},
+    {create: createClaimModule, tokens: Object.values(ClaimTokens)},
 ]
 
 function createContainer(): Container {

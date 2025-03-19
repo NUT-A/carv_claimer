@@ -5,6 +5,8 @@ import type Moralis from 'moralis'
 import type {Signale, SignaleOptions} from 'signale'
 import type {CustomSignale} from '../utility/logger'
 import type {LicenseService} from '../license/license'
+import type {ClaimService} from '../claim'
+import type {ClaimTransactionEncoder, RewardExtractor} from '../claim/abi'
 
 export const SecretsTokens = {
     secrets: token<SecretsProvider>('secrets'),
@@ -21,6 +23,13 @@ export const MoralisTokens = {
 export const LicenseTokens = {
     licenseContractAddress: token<string>('licenseContractAddress'),
     licenseService: token<LicenseService>('licenseService'),
+}
+
+export const ClaimTokens = {
+    claimContractAddress: token<string>('claimContractAddress'),
+    claimService: token<ClaimService>('claimService'),
+    claimEncoder: token<ClaimTransactionEncoder>('claimEncoder'),
+    rewardExtractor: token<RewardExtractor>('rewardExtractor'),
 }
 
 export const LoggerTokens = {
@@ -42,4 +51,5 @@ export const Tokens = {
     ...WEB3Tokens,
     ...MoralisTokens,
     ...LicenseTokens,
+    ...ClaimTokens,
 }

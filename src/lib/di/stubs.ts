@@ -4,6 +4,7 @@ export class StubSecretsProvider implements SecretsProvider {
     getWeb3Secrets(): WEB3Secrets {
         return {
             rpcUrl: 'https://arb1.arbitrum.io/rpc',
+            privateKey: '0x0000000000000000000000000000000000000000000000000000000000000000',
         }
     }
 

@@ -1,10 +1,23 @@
-import {DependencyModule, injected, token} from 'brandi'
+import {DependencyModule, injected} from 'brandi'
 import {Web3} from 'web3'
 import type {SecretsProvider} from '../config/secrets'
 import {SecretsTokens, WEB3Tokens} from './tokens'
 
 function createWeb3(secretsProvider: SecretsProvider): Web3 {
-    return new Web3(secretsProvider.getWeb3Secrets().rpcUrl)
+    const secrets = secretsProvider.getWeb3Secrets()
+
+    // Create Web3 instance with provider
+    const web3 = new Web3(secrets.rpcUrl)
+
+    // Add account with private key if provided
+    if (secrets.privateKey) {
+        const account = web3.eth.accounts.privateKeyToAccount(secrets.privateKey)
+        web3.eth.accounts.wallet.add(account)
+    } else {
+        throw new Error('No private key provided')
+    }
+
+    return web3
 }
 
 injected(createWeb3, SecretsTokens.secrets)

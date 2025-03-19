@@ -11,13 +11,24 @@ async function main(): Promise<void> {
     // Initialize Moralis before using any services that depend on it
     await initializeContainer(container)
 
+    const logger = container.get(Tokens.logger)
+
+    const web3 = container.get(Tokens.web3)
+    const address = web3.eth.accounts.wallet[0]!.address
+
+    logger.info(`Address: ${address}`)
+
     // Get the license service (now synchronously available)
     const licenseService = container.get(Tokens.licenseService)
-    const licenses = await licenseService.getAllLicenses('0x703B8F516d6f1679338840f3b060BA16518763Cd')
+    const licenses = await licenseService.getAllLicenses(address)
     const ids = licenses.map(license => license.tokenId.toString())
 
-    const logger = container.get(Tokens.logger)
-    logger.success(`Found ${ids.length} licenses: ${ids.join(', ')}`)
+    logger.info(`Found ${ids.length} licenses: ${ids.join(', ')}`)
+
+    const claimService = container.get(Tokens.claimService)
+    const claim = await claimService.claim(licenses)
+
+    logger.success(`Claimed ${claim} rewards`)
 }
 
 await main()

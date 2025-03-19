@@ -1,5 +1,6 @@
 export type WEB3Secrets = Readonly<{
     rpcUrl: string
+    privateKey: string
 }>
 
 export type MoralisSecrets = Readonly<{
