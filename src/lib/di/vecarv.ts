@@ -1,9 +1,12 @@
 import {DependencyModule, injected} from 'brandi'
-import {VeCarvTokens, WEB3Tokens, ConfigurationTokens} from './tokens'
+import {VeCarvTokens, WEB3Tokens, ConfigurationTokens, LoggerTokens} from './tokens'
 import {WEB3WithdrawTransactionEncoder} from '../vecarv/abi'
-import type {LockDuration} from '../vecarv/abi'
+import type {LockDuration, WithdrawTransactionEncoder} from '../vecarv/abi'
 import {WEB3WithdrawService} from '../vecarv'
 import type {ConfigurationProvider} from '../config/configuration'
+import type {CustomSignale} from '../utility/logger'
+import type {Factory} from 'brandi'
+import type Web3 from 'web3'
 
 // Create a function to get the veCarvContractAddress from the configuration provider
 function getVeCarvContractAddress(configProvider: ConfigurationProvider): string {
@@ -16,11 +19,27 @@ function getDefaultLockDuration(configProvider: ConfigurationProvider): LockDura
     return configProvider.getVeCarvConfiguration().defaultLockDuration
 }
 
+// Create service for withdrawing tokens
+function createWithdrawService(
+    web3: Web3,
+    withdrawEncoder: WithdrawTransactionEncoder,
+    customLoggerFactory: Factory<CustomSignale, [scope: string, interactive?: boolean]>,
+    lockDuration: LockDuration,
+) {
+    return new WEB3WithdrawService(web3, withdrawEncoder, customLoggerFactory('vecarv', true), lockDuration)
+}
+
 // Inject dependencies directly to constructors
 injected(getVeCarvContractAddress, ConfigurationTokens.configuration)
 injected(getDefaultLockDuration, ConfigurationTokens.configuration)
 injected(WEB3WithdrawTransactionEncoder, WEB3Tokens.web3, VeCarvTokens.veCarvContractAddress)
-injected(WEB3WithdrawService, WEB3Tokens.web3, VeCarvTokens.withdrawEncoder, VeCarvTokens.defaultLockDuration)
+injected(
+    createWithdrawService,
+    WEB3Tokens.web3,
+    VeCarvTokens.withdrawEncoder,
+    LoggerTokens.customLoggerFactory,
+    VeCarvTokens.defaultLockDuration,
+)
 
 // Create the vecarv module
 export function createVeCarvModule(): DependencyModule {
@@ -30,7 +49,7 @@ export function createVeCarvModule(): DependencyModule {
     module.bind(VeCarvTokens.veCarvContractAddress).toInstance(getVeCarvContractAddress).inSingletonScope()
     module.bind(VeCarvTokens.defaultLockDuration).toInstance(getDefaultLockDuration).inSingletonScope()
     module.bind(VeCarvTokens.withdrawEncoder).toInstance(WEB3WithdrawTransactionEncoder).inSingletonScope()
-    module.bind(VeCarvTokens.withdrawService).toInstance(WEB3WithdrawService).inSingletonScope()
+    module.bind(VeCarvTokens.withdrawService).toInstance(createWithdrawService).inSingletonScope()
 
     return module
 }

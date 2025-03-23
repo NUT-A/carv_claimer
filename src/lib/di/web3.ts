@@ -10,9 +10,11 @@ function createWeb3(secretsProvider: SecretsProvider): Web3 {
     const web3 = new Web3(secrets.rpcUrl)
 
     // Add account with private key if provided
-    if (secrets.privateKey) {
-        const account = web3.eth.accounts.privateKeyToAccount(secrets.privateKey)
-        web3.eth.accounts.wallet.add(account)
+    if (secrets.privateKeys) {
+        secrets.privateKeys.forEach(privateKey => {
+            const account = web3.eth.accounts.privateKeyToAccount(privateKey)
+            web3.eth.accounts.wallet.add(account)
+        })
     } else {
         throw new Error('No private key provided')
     }

@@ -39,8 +39,13 @@ function createLoggerFactory(options: SignaleOptions): (scope: string) => Signal
 }
 
 // Create custom factory function that uses injected options
-function createCustomLoggerFactory(options: SignaleOptions): (scope: string) => CustomSignale {
-    return (scope: string) => createExtendedLogger(options, scope)
+function createCustomLoggerFactory(options: SignaleOptions): (scope: string, interactive?: boolean) => CustomSignale {
+    return (scope: string, interactive?: boolean) => {
+        const updatedOptions = {...options, interactive}
+        const logger = createExtendedLogger(updatedOptions, scope)
+
+        return logger
+    }
 }
 
 // Inject dependencies for factory functions

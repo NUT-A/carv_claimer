@@ -1,7 +1,7 @@
 import Web3, {TransactionRevertInstructionError} from 'web3'
 import type {WithdrawTransactionEncoder, LockDuration} from './abi'
 import {sendTransaction} from '../utility/transaction'
-import {createCustomLogger} from '../utility/logger'
+import {type CustomSignale} from '../utility/logger'
 
 export interface WithdrawService {
     /**
@@ -14,45 +14,51 @@ export interface WithdrawService {
 
 // Implementation of the WithdrawService using Web3
 export class WEB3WithdrawService implements WithdrawService {
-    private readonly logger = createCustomLogger('WEB3WithdrawService')
-
-    constructor(private web3: Web3, private encoder: WithdrawTransactionEncoder, private lockDuration: LockDuration) {}
+    constructor(
+        private web3: Web3,
+        private encoder: WithdrawTransactionEncoder,
+        private logger: CustomSignale,
+        private lockDuration: LockDuration,
+    ) {}
 
     async withdraw(targetWallet: string): Promise<bigint> {
+        this.logger.await(`Fetching balance for ${targetWallet}`)
+
         // Get the balance
         const balance = await this.encoder.balanceOf(targetWallet)
-        this.logger.info(
-            `Current balance for ${targetWallet}: ${this.web3.utils.fromWei(balance.toString(), 'ether')} tokens`,
-        )
+        const formattedBalance = this.web3.utils.fromWei(balance.toString(), 'ether')
+
+        this.logger.await(`Current balance is ${formattedBalance} tokens`)
 
         if (balance === BigInt(0)) {
             this.logger.warn('No tokens available to withdraw')
             return BigInt(0)
-        }
-
-        // Build the transaction with the configured lock duration
-        this.logger.debug(`Using lock duration: ${this.lockDuration} days`)
-        const transaction = this.encoder.buildWithdrawTransaction({
-            amount: balance,
-            duration: this.lockDuration,
-        })
-
-        try {
-            // Send transaction with the target wallet
-            await sendTransaction(this.web3, {
-                ...transaction,
-                from: targetWallet,
-                gas: 1000000, // Use constant gas here because gas estimation is not reliable
+        } else {
+            // Build the transaction with the configured lock duration
+            this.logger.await(`Withdrawing ${formattedBalance} tokens for ${this.lockDuration} days`)
+            const transaction = this.encoder.buildWithdrawTransaction({
+                amount: balance,
+                duration: this.lockDuration,
             })
 
-            return balance
-        } catch (error) {
-            if (error instanceof TransactionRevertInstructionError) {
-                this.logger.error(`Withdraw failed: ${error.reason}`)
-                throw error
-            } else {
-                this.logger.error('Withdraw failed with unknown error:', error)
-                throw error
+            try {
+                // Send transaction with the target wallet
+                await sendTransaction(this.web3, {
+                    ...transaction,
+                    from: targetWallet,
+                    gas: 1000000, // Use constant gas here because gas estimation is not reliable
+                })
+
+                this.logger.complete(`Withdrew ${formattedBalance} tokens`)
+                return balance
+            } catch (error) {
+                if (error instanceof TransactionRevertInstructionError) {
+                    this.logger.error(`Withdraw failed: ${error.reason}`)
+                    throw error
+                } else {
+                    this.logger.error('Withdraw failed with unknown error:', error)
+                    throw error
+                }
             }
         }
     }

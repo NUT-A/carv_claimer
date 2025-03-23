@@ -52,7 +52,7 @@ export const LoggerTokens = {
     // Singleton logger with default scope and options
     logger: token<Signale>('logger'),
     // Factory that creates a logger with custom scope and default options
-    customLoggerFactory: token<Factory<CustomSignale, [scope: string]>>('customLoggerFactory'),
+    customLoggerFactory: token<Factory<CustomSignale, [scope: string, interactive?: boolean]>>('customLoggerFactory'),
     // Default options for loggers
     defaultOptions: token<SignaleOptions>('loggerDefaultOptions'),
     // Default scope for singleton logger

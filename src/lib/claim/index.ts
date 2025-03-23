@@ -2,6 +2,7 @@ import Web3, {TransactionRevertInstructionError} from 'web3'
 import type {ClaimTransactionEncoder, RewardExtractor} from './abi'
 import type {LicenseInfo} from '../license/license'
 import {sendTransaction} from '../utility/transaction'
+import type {CustomSignale} from '../utility/logger'
 
 export interface ClaimService {
     /**
@@ -19,9 +20,12 @@ export class WEB3ClaimService implements ClaimService {
         private web3: Web3,
         private encoder: ClaimTransactionEncoder,
         private rewardExtractor: RewardExtractor,
+        private logger: CustomSignale,
     ) {}
 
     async claim(licenses: LicenseInfo[], walletAddress: string): Promise<number> {
+        this.logger.await(`Claiming rewards for ${licenses.length} licenses`)
+
         // Extract token IDs from license information
         const tokenIds = licenses.map(license => license.tokenId)
 
@@ -38,19 +42,26 @@ export class WEB3ClaimService implements ClaimService {
 
             // Extract claimed reward amount from logs using the reward extractor
             if (receipt.logs) {
-                return this.rewardExtractor.extractRewardsFromLogs(this.web3, receipt.logs)
+                const rewards = this.rewardExtractor.extractRewardsFromLogs(this.web3, receipt.logs)
+                this.logger.complete(`Claimed ${rewards} rewards`)
+                return rewards
+            } else {
+                this.logger.warn(`No rewards claimed for ${walletAddress}`)
+                return 0
             }
-
-            return 0
         } catch (error) {
             if (
                 error instanceof TransactionRevertInstructionError &&
                 error.reason.includes('execution reverted: No reward')
             ) {
+                this.logger.warn(`No rewards claimed for ${walletAddress}`)
                 return 0
             } else {
+                this.logger.error(`Error claiming rewards for ${walletAddress}`, error)
                 throw error
             }
+        } finally {
+            this.logger.breakInteractiveChain()
         }
     }
 }

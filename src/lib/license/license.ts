@@ -1,6 +1,6 @@
 import Moralis from 'moralis'
 import {EvmAddress} from '@moralisweb3/common-evm-utils'
-import type {Signale} from 'signale'
+import type {CustomSignale} from '../utility/logger'
 
 export type LicenseInfo = Readonly<{
     tokenId: bigint
@@ -13,12 +13,14 @@ export interface LicenseService {
 export class MoralisLicenseService implements LicenseService {
     constructor(
         private readonly moralis: typeof Moralis,
-        private readonly logger: Signale,
+        private readonly logger: CustomSignale,
         private readonly contractAddress: string,
     ) {}
 
     // Gets all NFTs owned by an address and returns their license info
     async getAllLicenses(owner: string): Promise<LicenseInfo[]> {
+        this.logger.await(`Getting all licenses...`)
+
         const moralisOwnerAddress = EvmAddress.create(owner)
         const moralisContractAddress = EvmAddress.create(this.contractAddress)
 
@@ -33,7 +35,8 @@ export class MoralisLicenseService implements LicenseService {
         }))
 
         // Log the number of licenses found
-        this.logger.info(`Found ${licenses.length} licenses for address ${owner}`)
+        this.logger.complete(`Found ${licenses.length} licenses`)
+        this.logger.breakInteractiveChain()
 
         return licenses
     }

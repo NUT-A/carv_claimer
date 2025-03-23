@@ -11,7 +11,7 @@ export class StubSecretsProvider implements SecretsProvider {
     getWeb3Secrets(): WEB3Secrets {
         return {
             rpcUrl: 'https://arb1.arbitrum.io/rpc',
-            privateKey: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            privateKeys: ['0x0000000000000000000000000000000000000000000000000000000000000000'],
         }
     }
 
@@ -32,17 +32,10 @@ export class StubConfigurationProvider implements ConfigurationProvider {
     }
 
     getAppConfiguration(): AppConfiguration {
-        // Determine log level based on NODE_ENV
-        const isProduction = process.env.NODE_ENV === 'production'
-
         return {
             defaultScope: 'carv',
             // Set log level based on environment
-            loggerOptions: {
-                // In production, use 'info' level (hides debug logs)
-                // For other environments, use 'debug' level (shows all logs)
-                logLevel: isProduction ? 'info' : 'debug',
-            },
+            loggerOptions: {},
         }
     }
 
