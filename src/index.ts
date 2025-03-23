@@ -28,7 +28,12 @@ async function main(): Promise<void> {
     const claimService = container.get(Tokens.claimService)
     const claim = await claimService.claim(licenses)
 
-    logger.success(`Claimed ${claim} rewards`)
+    logger.info(`Claimed ${claim} rewards`)
+
+    const withdrawService = container.get(Tokens.withdrawService)
+    const withdraw = await withdrawService.withdraw(address, 150)
+
+    logger.success(`Withdrawn ${withdraw} tokens`)
 }
 
 await main()

@@ -7,6 +7,8 @@ import type {CustomSignale} from '../utility/logger'
 import type {LicenseService} from '../license/license'
 import type {ClaimService} from '../claim'
 import type {ClaimTransactionEncoder, RewardExtractor} from '../claim/abi'
+import type {WithdrawTransactionEncoder} from '../vecarv/abi'
+import type {WithdrawService} from '../vecarv'
 
 export const SecretsTokens = {
     secrets: token<SecretsProvider>('secrets'),
@@ -32,6 +34,12 @@ export const ClaimTokens = {
     rewardExtractor: token<RewardExtractor>('rewardExtractor'),
 }
 
+export const VeCarvTokens = {
+    veCarvContractAddress: token<string>('veCarvContractAddress'),
+    withdrawEncoder: token<WithdrawTransactionEncoder>('withdrawEncoder'),
+    withdrawService: token<WithdrawService>('withdrawService'),
+}
+
 export const LoggerTokens = {
     // Factory that creates a logger with default options but customizable scope
     loggerFactory: token<Factory<Signale, [scope: string]>>('loggerFactory'),
@@ -52,4 +60,5 @@ export const Tokens = {
     ...MoralisTokens,
     ...LicenseTokens,
     ...ClaimTokens,
+    ...VeCarvTokens,
 }
