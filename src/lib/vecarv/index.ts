@@ -2,6 +2,7 @@ import Web3, {TransactionRevertInstructionError} from 'web3'
 import type {WithdrawTransactionEncoder, LockDuration} from './abi'
 import {sendTransaction} from '../utility/transaction'
 import {type CustomSignale} from '../utility/logger'
+import type {TransactionConfiguration} from '../config/configuration'
 
 export interface WithdrawService {
     /**
@@ -19,6 +20,7 @@ export class WEB3WithdrawService implements WithdrawService {
         private encoder: WithdrawTransactionEncoder,
         private logger: CustomSignale,
         private lockDuration: LockDuration,
+        private txConfig: TransactionConfiguration,
     ) {}
 
     async withdraw(targetWallet: string): Promise<bigint> {
@@ -46,7 +48,7 @@ export class WEB3WithdrawService implements WithdrawService {
                 await sendTransaction(this.web3, {
                     ...transaction,
                     from: targetWallet,
-                    gas: 1000000, // Use constant gas here because gas estimation is not reliable
+                    gas: this.txConfig.gas, // Use configured gas value
                 })
 
                 this.logger.complete(`Withdrew ${formattedBalance} tokens`)

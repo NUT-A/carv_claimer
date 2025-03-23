@@ -10,6 +10,7 @@ import {WEB3ClaimService, type ClaimService} from '../claim'
 import type {ConfigurationProvider} from '../config/configuration'
 import type {CustomSignale} from '../utility/logger'
 import type Web3 from 'web3'
+
 // Create a function to get the claimContractAddress from the configuration provider
 function getClaimContractAddress(configProvider: ConfigurationProvider): string {
     return configProvider.getContractAddresses().claim
@@ -20,8 +21,15 @@ function createClaimService(
     claimEncoder: ClaimTransactionEncoder,
     rewardExtractor: RewardExtractor,
     customLoggerFactory: Factory<CustomSignale, [scope: string, interactive?: boolean]>,
+    configProvider: ConfigurationProvider,
 ): ClaimService {
-    return new WEB3ClaimService(web3, claimEncoder, rewardExtractor, customLoggerFactory('claim', true))
+    return new WEB3ClaimService(
+        web3,
+        claimEncoder,
+        rewardExtractor,
+        customLoggerFactory('claim', true),
+        configProvider.getTransactionConfiguration(),
+    )
 }
 
 // Inject dependencies directly to constructors
@@ -34,6 +42,7 @@ injected(
     ClaimTokens.claimEncoder,
     ClaimTokens.rewardExtractor,
     LoggerTokens.customLoggerFactory,
+    ConfigurationTokens.configuration,
 )
 
 // Create the claim module

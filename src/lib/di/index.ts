@@ -7,6 +7,7 @@ import {createLoggerModule} from './logger'
 import {createLicenseModule} from './license'
 import {createClaimModule} from './claim'
 import {createVeCarvModule} from './vecarv'
+import {createSleepModule} from './sleep'
 import {
     SecretsTokens,
     ConfigurationTokens,
@@ -16,6 +17,7 @@ import {
     LicenseTokens,
     ClaimTokens,
     VeCarvTokens,
+    SleepTokens,
     Tokens,
 } from './tokens'
 
@@ -30,6 +32,7 @@ const moduleCreators = [
     {create: createLicenseModule, tokens: Object.values(LicenseTokens)},
     {create: createClaimModule, tokens: Object.values(ClaimTokens)},
     {create: createVeCarvModule, tokens: Object.values(VeCarvTokens)},
+    {create: createSleepModule, tokens: Object.values(SleepTokens)},
 ]
 
 function createContainer(): Container {

@@ -25,8 +25,15 @@ function createWithdrawService(
     withdrawEncoder: WithdrawTransactionEncoder,
     customLoggerFactory: Factory<CustomSignale, [scope: string, interactive?: boolean]>,
     lockDuration: LockDuration,
+    configProvider: ConfigurationProvider,
 ) {
-    return new WEB3WithdrawService(web3, withdrawEncoder, customLoggerFactory('vecarv', true), lockDuration)
+    return new WEB3WithdrawService(
+        web3,
+        withdrawEncoder,
+        customLoggerFactory('vecarv', true),
+        lockDuration,
+        configProvider.getTransactionConfiguration(),
+    )
 }
 
 // Inject dependencies directly to constructors
@@ -39,6 +46,7 @@ injected(
     VeCarvTokens.withdrawEncoder,
     LoggerTokens.customLoggerFactory,
     VeCarvTokens.defaultLockDuration,
+    ConfigurationTokens.configuration,
 )
 
 // Create the vecarv module

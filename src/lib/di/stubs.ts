@@ -4,6 +4,8 @@ import type {
     ContractAddresses,
     AppConfiguration,
     VeCarvConfiguration,
+    TransactionConfiguration,
+    SleepConfiguration,
 } from '../config/configuration'
 import type {LockDuration} from '../vecarv/abi'
 
@@ -36,6 +38,7 @@ export class StubConfigurationProvider implements ConfigurationProvider {
             defaultScope: 'carv',
             // Set log level based on environment
             loggerOptions: {},
+            shouldShuffleWallets: true,
         }
     }
 
@@ -43,6 +46,19 @@ export class StubConfigurationProvider implements ConfigurationProvider {
         return {
             // Default lock duration as a specific value from the union type
             defaultLockDuration: 150 as LockDuration,
+        }
+    }
+
+    getTransactionConfiguration(): TransactionConfiguration {
+        return {
+            gas: 1000000,
+        }
+    }
+
+    getSleepConfiguration(): SleepConfiguration {
+        return {
+            minSleepMS: 1000,
+            maxSleepMS: 10000,
         }
     }
 }

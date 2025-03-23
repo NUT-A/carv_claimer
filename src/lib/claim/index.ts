@@ -3,6 +3,7 @@ import type {ClaimTransactionEncoder, RewardExtractor} from './abi'
 import type {LicenseInfo} from '../license/license'
 import {sendTransaction} from '../utility/transaction'
 import type {CustomSignale} from '../utility/logger'
+import type {TransactionConfiguration} from '../config/configuration'
 
 export interface ClaimService {
     /**
@@ -21,6 +22,7 @@ export class WEB3ClaimService implements ClaimService {
         private encoder: ClaimTransactionEncoder,
         private rewardExtractor: RewardExtractor,
         private logger: CustomSignale,
+        private txConfig: TransactionConfiguration,
     ) {}
 
     async claim(licenses: LicenseInfo[], walletAddress: string): Promise<number> {
@@ -37,7 +39,7 @@ export class WEB3ClaimService implements ClaimService {
             const receipt = await sendTransaction(this.web3, {
                 ...transaction,
                 from: walletAddress,
-                gas: 1000000, // Use constant gas here because gas estimation is not reliable
+                gas: this.txConfig.gas, // Use configured gas value
             })
 
             // Extract claimed reward amount from logs using the reward extractor
