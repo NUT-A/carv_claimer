@@ -5,21 +5,20 @@ import {createCustomLogger} from '../utility/logger'
 
 export interface WithdrawService {
     /**
-     * Withdraw all available tokens for a specified duration
+     * Withdraw all available tokens
      * @param targetWallet Address of the wallet to withdraw from
-     * @param duration Duration of the withdrawal in days (15, 90, or 150)
      * @returns The amount of tokens withdrawn as bigint
      */
-    withdraw(targetWallet: string, duration: LockDuration): Promise<bigint>
+    withdraw(targetWallet: string): Promise<bigint>
 }
 
 // Implementation of the WithdrawService using Web3
 export class WEB3WithdrawService implements WithdrawService {
     private readonly logger = createCustomLogger('WEB3WithdrawService')
 
-    constructor(private web3: Web3, private encoder: WithdrawTransactionEncoder) {}
+    constructor(private web3: Web3, private encoder: WithdrawTransactionEncoder, private lockDuration: LockDuration) {}
 
-    async withdraw(targetWallet: string, duration: LockDuration): Promise<bigint> {
+    async withdraw(targetWallet: string): Promise<bigint> {
         // Get the balance
         const balance = await this.encoder.balanceOf(targetWallet)
         this.logger.info(
@@ -31,10 +30,11 @@ export class WEB3WithdrawService implements WithdrawService {
             return BigInt(0)
         }
 
-        // Build the transaction
+        // Build the transaction with the configured lock duration
+        this.logger.debug(`Using lock duration: ${this.lockDuration} days`)
         const transaction = this.encoder.buildWithdrawTransaction({
             amount: balance,
-            duration,
+            duration: this.lockDuration,
         })
 
         try {

@@ -5,9 +5,6 @@ async function main(): Promise<void> {
     // Get the container
     const container = getContainer()
 
-    container.bind(Tokens.defaultOptions).toConstant({})
-    container.bind(Tokens.defaultScope).toConstant('carv')
-
     // Initialize Moralis before using any services that depend on it
     await initializeContainer(container)
 
@@ -26,12 +23,12 @@ async function main(): Promise<void> {
     logger.info(`Found ${ids.length} licenses: ${ids.join(', ')}`)
 
     const claimService = container.get(Tokens.claimService)
-    const claim = await claimService.claim(licenses)
+    const claim = await claimService.claim(licenses, address)
 
     logger.info(`Claimed ${claim} rewards`)
 
     const withdrawService = container.get(Tokens.withdrawService)
-    const withdraw = await withdrawService.withdraw(address, 150)
+    const withdraw = await withdrawService.withdraw(address)
 
     logger.success(`Withdrawn ${withdraw} tokens`)
 }

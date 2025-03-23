@@ -1,5 +1,6 @@
 import {token, type AsyncFactory, type Factory} from 'brandi'
 import type {SecretsProvider} from '../config/secrets'
+import type {ConfigurationProvider} from '../config/configuration'
 import type Web3 from 'web3'
 import type Moralis from 'moralis'
 import type {Signale, SignaleOptions} from 'signale'
@@ -7,11 +8,15 @@ import type {CustomSignale} from '../utility/logger'
 import type {LicenseService} from '../license/license'
 import type {ClaimService} from '../claim'
 import type {ClaimTransactionEncoder, RewardExtractor} from '../claim/abi'
-import type {WithdrawTransactionEncoder} from '../vecarv/abi'
+import type {WithdrawTransactionEncoder, LockDuration} from '../vecarv/abi'
 import type {WithdrawService} from '../vecarv'
 
 export const SecretsTokens = {
     secrets: token<SecretsProvider>('secrets'),
+}
+
+export const ConfigurationTokens = {
+    configuration: token<ConfigurationProvider>('configuration'),
 }
 
 export const WEB3Tokens = {
@@ -38,6 +43,7 @@ export const VeCarvTokens = {
     veCarvContractAddress: token<string>('veCarvContractAddress'),
     withdrawEncoder: token<WithdrawTransactionEncoder>('withdrawEncoder'),
     withdrawService: token<WithdrawService>('withdrawService'),
+    defaultLockDuration: token<LockDuration>('defaultLockDuration'),
 }
 
 export const LoggerTokens = {
@@ -55,6 +61,7 @@ export const LoggerTokens = {
 
 export const Tokens = {
     ...SecretsTokens,
+    ...ConfigurationTokens,
     ...LoggerTokens,
     ...WEB3Tokens,
     ...MoralisTokens,

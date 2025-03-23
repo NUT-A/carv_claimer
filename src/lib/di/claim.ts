@@ -1,9 +1,16 @@
 import {DependencyModule, injected} from 'brandi'
-import {ClaimTokens, WEB3Tokens} from './tokens'
+import {ClaimTokens, WEB3Tokens, ConfigurationTokens} from './tokens'
 import {WEB3ClaimTransactionEncoder, ClaimRewardExtractor} from '../claim/abi'
 import {WEB3ClaimService} from '../claim'
+import type {ConfigurationProvider} from '../config/configuration'
+
+// Create a function to get the claimContractAddress from the configuration provider
+function getClaimContractAddress(configProvider: ConfigurationProvider): string {
+    return configProvider.getContractAddresses().claim
+}
 
 // Inject dependencies directly to constructors
+injected(getClaimContractAddress, ConfigurationTokens.configuration)
 injected(WEB3ClaimTransactionEncoder, WEB3Tokens.web3, ClaimTokens.claimContractAddress)
 injected(ClaimRewardExtractor, WEB3Tokens.web3)
 injected(WEB3ClaimService, WEB3Tokens.web3, ClaimTokens.claimEncoder, ClaimTokens.rewardExtractor)
@@ -12,10 +19,8 @@ injected(WEB3ClaimService, WEB3Tokens.web3, ClaimTokens.claimEncoder, ClaimToken
 export function createClaimModule(): DependencyModule {
     const module = new DependencyModule()
 
-    // Bind default contract address for claim service
-    const defaultClaimContract = '0xa91fF8b606BA57D8c6638Dd8CF3FC7eB15a9c634'
-
-    module.bind(ClaimTokens.claimContractAddress).toConstant(defaultClaimContract)
+    // Bind contract address from configuration provider
+    module.bind(ClaimTokens.claimContractAddress).toInstance(getClaimContractAddress).inSingletonScope()
     module.bind(ClaimTokens.rewardExtractor).toInstance(ClaimRewardExtractor).inSingletonScope()
     module.bind(ClaimTokens.claimEncoder).toInstance(WEB3ClaimTransactionEncoder).inSingletonScope()
     module.bind(ClaimTokens.claimService).toInstance(WEB3ClaimService).inSingletonScope()

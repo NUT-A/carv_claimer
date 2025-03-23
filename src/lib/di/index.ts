@@ -1,5 +1,6 @@
 import {Container} from 'brandi'
 import {createSecretsModule} from './secrets'
+import {createConfigurationModule} from './configuration'
 import {createWeb3Module} from './web3'
 import {createMoralisModule, initializeMoralis} from './moralis'
 import {createLoggerModule} from './logger'
@@ -8,6 +9,7 @@ import {createClaimModule} from './claim'
 import {createVeCarvModule} from './vecarv'
 import {
     SecretsTokens,
+    ConfigurationTokens,
     WEB3Tokens,
     MoralisTokens,
     LoggerTokens,
@@ -21,6 +23,7 @@ import {
 // This makes it easy to add new modules - just add them to this array
 const moduleCreators = [
     {create: createSecretsModule, tokens: Object.values(SecretsTokens)},
+    {create: createConfigurationModule, tokens: Object.values(ConfigurationTokens)},
     {create: createLoggerModule, tokens: Object.values(LoggerTokens)},
     {create: createWeb3Module, tokens: Object.values(WEB3Tokens)},
     {create: createMoralisModule, tokens: Object.values(MoralisTokens)},
